@@ -30,3 +30,11 @@ The difficulty of the Retrosynthesis problem has lead to a number of computation
 Other algorithms use physical chemistry calculations to predict reaction energy barriers and likely products from first principals. This class of algorithms generalize much better to novel molecules, but are computationally prohibitive.
 
 More recently, machine learning algorithms have been combined with rules based algorithms to improve performance, but have not escaped the generalization drawbacks of rules based systems. This has motivated fully machine learning based solutions to retrosyntehsis prediction.
+
+## Deep Learning for Retrosynthesis
+
+Deep learning was first applied to Retrosynthesis (to my knowledge) in 2017 by the [Liu et al](https://pubs.acs.org/doi/10.1021/acscentsci.7b00303). Liu et al framed the problem of Retrosynthesis prediction as a squence to sequence problem. The authors created a benchmark dataset of 50,000 reactant/product pairs with known reaction mechanisms. Liu et al used LSTM based sequence to sequence models and achieved 37.4% top-1 prediction accuracy compared to a rules based template matching model which achieved 35.4% top-1 accuracy.
+
+Earlier this year (2019), [Lin et al](https://arxiv.org/abs/1906.02308) followed up on the results of Liu, using transformer based models for the sequence to sequence task. Lin et al achieved 54.6% top-1 accuracy on the benchmark dataset.
+
+This repo shows how using specific data augmentation techniques for the sequence to sequence task can boost top-1 accuracy to 64%. But first, we need to discuss how exactly we can model reaction prediction as a sequence to sequence task.
