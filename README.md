@@ -18,3 +18,7 @@ In fact, every carbon to carbon bond in the product molecule is potentially a di
 
 ![](media/retro_pathways.gif)
 [source](https://pubs.acs.org/doi/10.1021/acscentsci.7b00303)
+
+How do you choose which one is better? We can determine the criteria easily - we want the reaction that maximizes speed, yield, specificity (lack of off target products) and cost. Actually quantifying these metrics is another matter. If there is no literature on the specific reaction, it falls to an expert organic chemist. The chemist must use their knowledge of reaction mechanisms to estimate off target products. Yield must be determined experimentally, which takes time.
+
+This process must be conducted iteratively at all levels of pathway planning. It's time consuming and relies on domain experts and their ability to keep thousands of reaction mechanisms in mind at all steps. Because of the challenge of this process, many computational tools have been developed to aid retrosynthesis planning.
