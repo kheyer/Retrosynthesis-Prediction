@@ -38,3 +38,19 @@ Deep learning was first applied to Retrosynthesis (to my knowledge) in 2017 by t
 Earlier this year (2019), [Lin et al](https://arxiv.org/abs/1906.02308) followed up on the results of Liu, using transformer based models for the sequence to sequence task. Lin et al achieved 54.6% top-1 accuracy on the benchmark dataset.
 
 This repo shows how using specific data augmentation techniques for the sequence to sequence task can boost top-1 accuracy to 64%. But first, we need to discuss how exactly we can model reaction prediction as a sequence to sequence task.
+
+## Text Representations of Chemical Reactions
+
+In a sequence to sequence problem, our model takes as input a sequence of tokens and produces as output a new sequence of tokens. How do we represent chemical reactions as token sequence? We use SMILES strings.
+
+[Simplified Molecular-Input Line-Entry System](https://en.wikipedia.org/wiki/Simplified_molecular-input_line-entry_system) strings or SMILES strings are a way of representing organic molecules as text strings in such a way that the structure of the molecule is captured in the SMILES string. For example:
+
+![](media/smiles_example.png)
+
+So we can represent the following reaction:
+
+![](rxn1.png)
+
+as `N#Cc1ccsc1N.O=[N+]([O-])c1cc(F)c(F)cc1F.C1CCOC1.[H-].[Na+] >> N#Cc1ccsc1Nc1cc(F)c(F)cc1[N+](=O)[O-]`
+
+From a retrosynthesis standpoint, the product `N#Cc1ccsc1Nc1cc(F)c(F)cc1[N+](=O)[O-]` would be the input to the model, and the reactants `N#Cc1ccsc1N.O=[N+]([O-])c1cc(F)c(F)cc1F.C1CCOC1.[H-].[Na+]` would be the output.
