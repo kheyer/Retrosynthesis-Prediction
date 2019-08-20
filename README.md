@@ -85,3 +85,26 @@ After all these stages of filtering, a final datapoint might look like this:
 
 Input: `<RX_6> C/C=C/c1cc(C(=O)O)c(F)cc1OCC12CC3CC(CC(C3)C1)C2`
 Output: `C/C=C/c1cc(C(=O)OC(C)(C)C)c(F)cc1OCC12CC3CC(CC(C3)C1)C2`
+
+## SMILES-Based Data Augmentation
+
+Data augmentation is a collection of methods that allow us to modify our dataset to appear to have more unique data points than it really does. Data augmentation techniquesfor images such as flipping, rotating or cropping images, are widely used in computer vision. Representing molecules as SMILES strings allows us to use specific data augmentation strategies.
+
+Organic molecules are commonly represented as graphs. SMILES strings contain all the same information as a molecular graph, and one can easily convert between representations. Similar to how a specific graph can have multiple valid representations, a molecule can have multiple valid SMILES strings. For example, the following SMILES all represent the same molecule:
+
+`c1([C@@]2(OC(=O)CC)CC[NH+](C)C[C@H]2CC=C)ccccc1
+c1ccc([C@]2(OC(=O)CC)[C@H](CC=C)C[NH+](C)CC2)cc1
+c1ccccc1[C@@]1(OC(CC)=O)CC[NH+](C)C[C@H]1CC=C
+O=C(CC)O[C@]1(c2ccccc2)CC[NH+](C)C[C@H]1CC=C
+C[NH+]1CC[C@](OC(=O)CC)(c2ccccc2)[C@H](CC=C)C1
+C1[C@@](c2ccccc2)(OC(CC)=O)[C@H](CC=C)C[NH+](C)C1
+[C@]1(c2ccccc2)(OC(=O)CC)CC[NH+](C)C[C@H]1CC=C
+c1([C@@]2(OC(CC)=O)CC[NH+](C)C[C@H]2CC=C)ccccc1
+[C@@H]1(CC=C)C[NH+](C)CC[C@]1(OC(=O)CC)c1ccccc1
+c1cccc([C@@]2(OC(=O)CC)CC[NH+](C)C[C@H]2CC=C)c1`
+
+Typically a SMILES representation of a molecule is put through a canonicalization algorithm to set a specific standard representation for each molecule.
+
+We can use different valid SMILES representations to augment our dataset. This technique was proposed by [Bjerrum](https://arxiv.org/abs/1703.07076) and implemented in this [repo](https://github.com/EBjerrum/SMILES-enumeration).
+
+This technique was used by [Schwaller et al](https://arxiv.org/abs/1811.02633) in the task of synthesis prediction and showed an overall accuracy improvement.
