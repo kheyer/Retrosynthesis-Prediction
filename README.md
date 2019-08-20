@@ -54,3 +54,34 @@ So we can represent the following reaction:
 as `N#Cc1ccsc1N.O=[N+]([O-])c1cc(F)c(F)cc1F.C1CCOC1.[H-].[Na+] >> N#Cc1ccsc1Nc1cc(F)c(F)cc1[N+](=O)[O-]`
 
 From a retrosynthesis standpoint, the product `N#Cc1ccsc1Nc1cc(F)c(F)cc1[N+](=O)[O-]` would be the input to the model, and the reactants `N#Cc1ccsc1N.O=[N+]([O-])c1cc(F)c(F)cc1F.C1CCOC1.[H-].[Na+]` would be the output.
+
+## Developing a Dataset for Retrosynthesis
+
+This repo shows results on the benchmark retrosynthesis dataset created by Liu et al. It's important to point out some of the concessions made in creating that dataset. There are many factors that go into *truly* predicting a synthetic pathway. A full synthesis prediction would include things like reagents, reaction conditions and yield. Liu et al simplified the Retrosynthesis problem by removing all reagents from the data, so the model is predicting only over main reactants.
+
+![](media/reactants_reagents)
+
+Reactions with multiple products are broken up so that each item in the dataset consists of one major product being formed by some reaction.
+
+The dataset also classifies each reaction into ten different reaction categories.
+
+
+| Reaction Class |              Reaction Name             |
+|:--------------:|:--------------------------------------:|
+|        1       |   heteroatom alkylation and arylation  |
+|        2       |     acylation and related processes    |
+|        3       |           C–C bond formation           |
+|        4       |          heterocycle formation         |
+|        5       |               protections              |
+|        6       |              deprotections             |
+|        7       |               reductions               |
+|        8       |               oxidations               |
+|        9       | functional group interconversion (FGI) |
+|       10       |     functional group addition (FGA)    |
+
+A token representing the reaction type is prepended to the product SMILES as part of the input to the model. This greatly constrains the set of possible reactants and makes the prediction problem easier.
+
+After all these stages of filtering, a final datapoint might look like this:
+
+Input: `<RX_6> C/C=C/c1cc(C(=O)O)c(F)cc1OCC12CC3CC(CC(C3)C1)C2`
+Output: `C/C=C/c1cc(C(=O)OC(C)(C)C)c(F)cc1OCC12CC3CC(CC(C3)C1)C2`
