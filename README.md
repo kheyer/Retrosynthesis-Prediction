@@ -111,3 +111,28 @@ Typically a SMILES representation of a molecule is put through a canonicalizatio
 We can use different valid SMILES representations to augment our dataset. This technique was proposed by [Bjerrum](https://arxiv.org/abs/1703.07076) and implemented in this [repo](https://github.com/EBjerrum/SMILES-enumeration).
 
 This technique was used by [Schwaller et al](https://arxiv.org/abs/1811.02633) in the task of synthesis prediction and showed an overall accuracy improvement.
+
+## SMILES Based Data Augmentation for Retrosynthesis 
+
+The standard retrosynthesis training dataset consists of 40,000 examples. Three augmented versions of the dataset were generated - 
+  * 4x Augmentation - 160,000 examples
+  * 16x Augmentation - 640,000 examples
+  * 40x Augmentation - 1,560,000 examples
+  
+Code for generating the dataset can be found in the [Data Generation Notebook](https://github.com/kheyer/Retrosynthesis-Prediction/blob/master/notebooks/Data%20Generation.ipynb).
+
+The data files themselves can be found [here](https://www.dropbox.com/s/ze4bdif8sqjx5jx/Retrosynthesis%20Data.zip?dl=0)
+
+A sequence 2 sequence model was trained on each dataset to predict reactant SMILES from product SMILES. Each model was evaluated on the test set used by [Liu et al](https://pubs.acs.org/doi/10.1021/acscentsci.7b00303). Following the results of [Lin et al](https://arxiv.org/abs/1906.02308), a Transformer sequence to sequence model was used. The model was implemented in Pytorch using the [OpenNMT](https://github.com/OpenNMT/OpenNMT-py) library (would highly recommend).
+
+The full configuration file for the transformer model used can be found [here](https://github.com/kheyer/Retrosynthesis-Prediction/blob/master/model_details/model_config.yml) in the model details directory. Here are some select properties on the model size used.
+
+
+| Property        | Value  |
+|-----------------|--------|
+| Embedding Dim   | 256    |
+| Model Dim       | 256    |
+| Feedforward Dim | 2048   |
+| Heads           | 8      |
+| Layers          | 6      |
+| Iterations      | 100000 |
