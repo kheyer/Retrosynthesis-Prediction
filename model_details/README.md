@@ -16,9 +16,9 @@ Datasets should be plcaed in the `data` directory in the `OpenNMT-py` directory 
 
 In the `OpenNMT-py` directory, run the following command:
 
-    python preprocess.py -train_src data/dataset_directory/train_source.txt \
-    -train_tgt data/dataset_directory/train_targets.txt -valid_src data/dataset_directory/valid_source.txt \
-    -valid_tgt data/dataset_directory/valid_targets.txt -save_data data/dataset_directory/dataset_name \
+    python preprocess.py -train_src data/{dataset_directory}/{train_source}.txt \
+    -train_tgt data/{dataset_directory}/{train_targets}.txt -valid_src data/{dataset_directory}/{valid_source}.txt \
+    -valid_tgt data/{dataset_directory}/{valid_targets}.txt -save_data data/{dataset_directory}/{dataset_name} \
     -src_seq_length 1000 -tgt_seq_length 1000 -src_vocab_size 1000 -tgt_vocab_size 1000 -share_vocab
     
 ## Model Training
@@ -32,3 +32,12 @@ In the `OpenNMT-py` directory, run the following command:
     python train.py -config config/model_config.yml
     
 ## Model Prediction
+
+To predict on a data, run the following command in the `OpenNMT-py` directory:
+
+    python translate.py -model {saved_model_path}/{saved_model_name}.pt -src data/{dataset_directory}/{test_source}.txt \
+    -output {output_path}/{output_file}.txt -batch_size 128 -replace_unk -max_length 200 -beam_size 1 -n_best 1 -gpu 0
+    
+For Top k predictions, change the `beam_size` and `n_best` parameters to equal k. Experimentally I have found that increasing `beam_size` to be larger than `n_best` does not improve prediction accuracy, and in some cases hurts it.
+
+Predicted outputs for the results of the SMILES augmentation experiment are contained in the `predictions.zip` file.
