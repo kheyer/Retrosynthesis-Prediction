@@ -167,3 +167,9 @@ The reason for this is quite interesting. When you train on a large number of au
 In a sense, Top k accuracy is no longer truly Top k because you are evaluating over a much smaller set of unique predictions. To avoid this, one would need to create a sort of chemically constrained beam search that would filter out multiple predictions of the same SMILES.
 
 Overall, using 16x augmentation of the dataset appears to hit the sweet spot. The Top 1 accuracy is almost the same as the 40x augmented data without losing performance on Top 3, 5 and 10 accuracy.
+
+## Conclusions
+
+SMILES string augmentation is a valid data augmentation method that provides a significant boost to Top 1 accuracy. Using SMILES augmentation boosts Top 1 accuracy from 53.7% to 62.1% over an extablished best Top 1 performance of 54.6%.
+
+A side effect is observed where training on a large number of augmented examples leads to worse Top k accuracy performance due to the model predicting many variants of the same molecule. This motivates either tuning the level of augmentation to a degree where Top k accuracy is not affected, or developing a form of constrained beam search to avoid this issue.
