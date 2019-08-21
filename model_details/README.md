@@ -35,8 +35,9 @@ In the `OpenNMT-py` directory, run the following command:
 
 To predict on a data, run the following command in the `OpenNMT-py` directory:
 
-    python translate.py -model {saved_model_path}/{saved_model_name}.pt -src data/{dataset_directory}/{test_source}.txt \
-    -output {output_path}/{output_file}.txt -batch_size 128 -replace_unk -max_length 200 -beam_size 1 -n_best 1 -gpu 0
+    python translate.py -model {saved_model_path}/{saved_model_name}.pt \
+    -src data/{dataset_directory}/{test_source}.txt -output {output_path}/{output_file}.txt \
+    -batch_size 128 -replace_unk -max_length 200 -beam_size 1 -n_best 1 -gpu 0
     
 For Top k predictions, change the `beam_size` and `n_best` parameters to equal k. Experimentally I have found that increasing `beam_size` to be larger than `n_best` does not improve prediction accuracy, and in some cases hurts it.
 
