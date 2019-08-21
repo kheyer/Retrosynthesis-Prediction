@@ -1,0 +1,44 @@
+data: data/dataset_folder/dataset_name
+save_model: experiments/checkpoints/dataset_folder/model_name
+save_checkpoint_steps: 10000
+keep_checkpoint: 20
+seed: 42
+train_steps: 340000
+warmup_steps: 8000
+report_every: 1000
+
+decoder_type: transformer
+encoder_type: transformer
+word_vec_size: 256
+rnn_size: 256
+layers: 6
+transformer_ff: 2048
+heads: 8
+
+accum_count: 4
+optim: adam
+adam_beta1: 0.9
+adam_beta2: 0.998
+decay_method: noam
+learning_rate: 2.0
+max_grad_norm: 0.0
+
+batch_size: 6144
+batch_type: tokens
+normalization: tokens
+dropout: 0.1
+label_smoothing: 0.0
+
+max_generator_batches: 32
+
+param_init: 0.0
+param_init_glorot: 'true'
+position_encoding: 'true'
+share_embeddings: 'true'
+
+global_attention: general
+global_attention_function: softmax
+self_attn_type: scaled-dot
+
+gpu_ranks:
+- 0
