@@ -136,3 +136,34 @@ The full configuration file for the transformer model used can be found [here](h
 | Heads           | 8      |
 | Layers          | 6      |
 | Iterations      | 100000 |
+
+## Results
+
+For each dataset, a model was trained then used to predict on the test dataset. Models were evaluated at Top 1, 3, 5, and 10 accuracy. Here are our results compared to Liu et al and Lin et al:
+
+
+|     Model        | Top-1 Accuracy | Top-3 Accuracy | Top-5 Accuracy | Top-10 Accuracy |
+|------------------|----------------|----------------|----------------|-----------------|
+| Liu et al        |      37.4      |      52.4      |       57       |       61.7      |
+| Lin et al        |      54.6      |      __74.8__      |      __80.2__      |       __84.9__      |
+| No Augmentation  |      53.7      |      67.7      |      71.2      |       73.9      |
+| 4x Augmentation  |      56.0      |      67.6      |      72.3      |       76.5      |
+| 16x Augmentation |      61.3      |      70.9      |      74.2      |       76.4      |
+| 40x Augmentation |      __62.1__      |      64.1      |      65.0      |       66.4      |
+
+
+We compare results to Lin et al (the Lin model), as the authors also used a transformer model on the same dataset. The Lin model achieves similar Top-1 performance to our No Augmentation model. The 4x, 16x and 40x augmentation models all achieve a higher Top-1 accuracy than the Lin model.
+
+The Lin model performs better in terms of Top 3, 5 and 10 accuracy. This has puzzled me, especially in terms of the comparison to Top 1 accuracy after being trained on the same dataset. Lin et al specify they generate a new Train/Valid/Test split of the Liu et al dataset following the same percent split, so that could be a source of variation. Ther could also be an difference in the implementation of beam search used to generate top-k predictions. Lin et al do not specify the prediction implementation.
+
+Comparing results between augmented datasets, we see interesting trends in Top 1 vs Top k accuracy. As the number of augmented examples increases, Top 1 accuracy increases. Meanwhile, Top k accuracy increases to a point, then decreases.
+
+![](media/topk_accuracy.png)
+
+The reason for this is quite interesting. When you train on a large number of augmented SMILES, the model learns to predict different augmented versions of the same SMILES. What this means is that many of your Top k predictions are actually the same molecule predicted in a different way. We see this clearly when we look at the average number of chemically unique, canonicalized predictions.
+
+![](media/topk_unique.png)
+
+In a sense, Top k accuracy is no longer truly Top k because you are evaluating over a much smaller set of unique predictions. To avoid this, one would need to create a sort of chemically constrained beam search that would filter out multiple predictions of the same SMILES.
+
+Overall, using 16x augmentation of the dataset appears to hit the sweet spot. The Top 1 accuracy is almost the same as the 40x augmented data without losing performance on Top 3, 5 and 10 accuracy.
