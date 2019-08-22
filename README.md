@@ -168,6 +168,17 @@ In a sense, Top k accuracy is no longer truly Top k because you are evaluating o
 
 Overall, using 16x augmentation of the dataset appears to hit the sweet spot. The Top 1 accuracy is almost the same as the 40x augmented data without losing performance on Top 3, 5 and 10 accuracy.
 
+To further compare to Liu et al and Lin et al, we look at Top 10 accuracy across different reaction types.
+
+| Reaction Class, Top 10 Accuracy | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9     | 10    |
+|---------------------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| Liu et al                       | 57.5% | 74.6% | 46.1% | 27.8% | 80.0% | 62.8% | 67.8% | 69.1% | 47.3% | 56.5% |
+| Lin et al                       | __83.1%__ | __90.4%__ | __76.2%__ | 60.0% | 92.3% | __88.6%__ | __88.2%__ | __86.4%__ | __73.9%__ | 82.6% |
+| No Augmentation                 | 73.4% | 81.7% | 60.5% | 54.4% | 87.7% | 71.3% | 79.1% | 82.7% | 67.4% | 87.0% |
+| 4x Augmentation                 | 74.9% | 82.9% | 66.5% | 70.0% | 92.3% | 75.3% | 80.8% | 80.2% | 67.9% | 82.6% |
+| 16x Augmentation                | 73.5% | 84.5% | 66.3% | __76.7%__ | __93.8%__ | 74.7% | 81.9% | 75.3% | 65.8% | __91.3%__ |
+| 40x Augmentation                | 63.6% | 74.8% | 55.3% | 75.6% | 90.8% | 62.2% | 70.4% | 76.5% | 58.2% | 82.6% |
+
 ## Conclusions
 
 SMILES string augmentation is a valid data augmentation method that provides a significant boost to Top 1 accuracy. Using SMILES augmentation boosts Top 1 accuracy from 53.7% to 62.1% over an extablished best Top 1 performance of 54.6%.
