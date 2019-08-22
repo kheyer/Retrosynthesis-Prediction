@@ -168,7 +168,7 @@ In a sense, Top k accuracy is no longer truly Top k because you are evaluating o
 
 Overall, using 16x augmentation of the dataset appears to hit the sweet spot. The Top 1 accuracy is almost the same as the 40x augmented data without losing performance on Top 3, 5 and 10 accuracy.
 
-To further compare to Liu et al and Lin et al, we look at Top 10 accuracy across different reaction types.
+To further compare to Liu et al and Lin et al, we look at Top 10 accuracy across different reaction types. Here the column numbers correspond to the reaction classes in the table above.
 
 | Reaction Class, Top 10 Accuracy | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9     | 10    |
 |---------------------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
