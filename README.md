@@ -15,6 +15,21 @@ We trained a transformer sequence to sequence model for retrosynthesis reactant 
 | 16x Augmentation |      61.3      |      70.9      |      74.2      |       76.4      |
 | 40x Augmentation |      __62.1__      |      64.1      |      65.0      |       66.4      |
 
+## Repository Structure
+
+    │   README.md
+    │
+    ├───model_details
+    │       model_config.yml
+    │       predictions.zip
+    │       README.md
+    │
+    └───notebooks
+            Data Generation.ipynb
+            Prediction Evaluation.ipynb
+        
+The `notebooks` directory contains notebooks showing how to generate the SMILES augmented datasets (`Data Generation`) and how to evaluate model predictions (`Prediction Evaluation`). The `model_details` directory contains additional details on implementing the sequence to sequence transformer model using OpenNMT. `model_convig.yml` is a basic configuration file to recreate the training process. The `README` file in the `model_details` directory contains instructions on preprocessing data, training the model using the config file and generating predictions. The `predictions.zip` file contains predictions used to generate the results above.
+
 ## What is Retrosynthesis?
 
 Organic synthesis is is the study of creating molecules through chemical reactions. Synthesis is often thought of as developing a pathway that will map some precursor compounds through a series of reactions to create a desired product. Good synthetic routes maximize speed, cost and yield while minimizing off target products. When an organic compound needs to be produced at scale, choosing the right synthetic route can have a major impact on the cost of production. Often, organic chemists find themselves in the position of planning reaction pathways out in reverse. Starting from the desired product molecule, how do we develop the most efficient synthesis pathway? This brings us to the problem of Retrosynthesis. Retrosynthesis is the process of taking some target molecule and working backwards iteratively to break the target molecule into simpler precursor molecules until all reactions start from a set of precursors that are cheap and widely available.
