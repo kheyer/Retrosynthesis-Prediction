@@ -49,7 +49,7 @@ In a sequence to sequence problem, our model takes as input a sequence of tokens
 
 So we can represent the following reaction:
 
-![](rxn1.png)
+![](media/rxn1.png)
 
 as `N#Cc1ccsc1N.O=[N+]([O-])c1cc(F)c(F)cc1F.C1CCOC1.[H-].[Na+] >> N#Cc1ccsc1Nc1cc(F)c(F)cc1[N+](=O)[O-]`
 
