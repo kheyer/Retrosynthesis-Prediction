@@ -2,6 +2,19 @@
 
 This repo details experiments on predicting retrosynthesis reactants from products using neural machine translation and SMILES based data augmentation.
 
+## Overview and Results
+
+We trained a transformer sequence to sequence model for retrosynthesis reactant prediction and experimented with the effect of SMILES based augmentation. We find that SMILES based augmentation increases Top 1 accuracy, but can lead to a decrease in Top K accuracy due to the model predicting different SMILES variants of the same molecule. These are results on the USPTO_50k benchmark retrosynthesis dataset relative to published results by [Liu et al](https://pubs.acs.org/doi/10.1021/acscentsci.7b00303) and [Lin et al](https://arxiv.org/abs/1906.02308). For a full description of the problem, data representation, SMILES augmentation, model implementation and results analysis, see the full document below.
+
+|     Model        | Top-1 Accuracy | Top-3 Accuracy | Top-5 Accuracy | Top-10 Accuracy |
+|------------------|----------------|----------------|----------------|-----------------|
+| Liu et al        |      37.4      |      52.4      |       57       |       61.7      |
+| Lin et al        |      54.6      |      __74.8__      |      __80.2__      |       __84.9__      |
+| No Augmentation  |      53.7      |      67.7      |      71.2      |       73.9      |
+| 4x Augmentation  |      56.0      |      67.6      |      72.3      |       76.5      |
+| 16x Augmentation |      61.3      |      70.9      |      74.2      |       76.4      |
+| 40x Augmentation |      __62.1__      |      64.1      |      65.0      |       66.4      |
+
 ## What is Retrosynthesis?
 
 Organic synthesis is is the study of creating molecules through chemical reactions. Synthesis is often thought of as developing a pathway that will map some precursor compounds through a series of reactions to create a desired product. Good synthetic routes maximize speed, cost and yield while minimizing off target products. When an organic compound needs to be produced at scale, choosing the right synthetic route can have a major impact on the cost of production. Often, organic chemists find themselves in the position of planning reaction pathways out in reverse. Starting from the desired product molecule, how do we develop the most efficient synthesis pathway? This brings us to the problem of Retrosynthesis. Retrosynthesis is the process of taking some target molecule and working backwards iteratively to break the target molecule into simpler precursor molecules until all reactions start from a set of precursors that are cheap and widely available.
