@@ -245,3 +245,20 @@ def heuristic_scoring(product, predicted_reactant, model_score, a=100, b=6):
         score = a*model_score_exp
     
     return score
+
+def check_terminal(smile):
+    # determines if a product molecule is considered terminal
+    smile = process_smile(smile)
+    
+    if 'Mg' in smile:
+        # Grignards are considered terminal
+        # Grignard forming reactions are not present in the training data and therefore cannot be predicted
+        return True
+    if smile_to_mol(smile).GetNumAtoms() < 13:
+        # Small molecules with less than 13 atoms are considered terminal
+        return True
+    if len(smile) <= 10:
+        # SMILES character length of less than 10 is considered terminal
+        return True
+    else:
+        return False
