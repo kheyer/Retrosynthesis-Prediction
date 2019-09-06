@@ -126,6 +126,14 @@ def create_prediction_df(molecule_variants, predictions, scores):
     
     return df
 
+def process_predictions(df):
+    # Clean and score prediction dataframe
+    df = clean_predictions(df)
+    df.reset_index(inplace=True, drop=True)
+    df = score_predictions(df)
+    
+    return df
+
 def clean_predictions(df):
     # cleans a dataframe of predictions
 
