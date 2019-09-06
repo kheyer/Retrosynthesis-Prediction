@@ -75,7 +75,6 @@ def smile_valid(smile):
     else:
         return False
 
-
 def canonicalize_smiles(smiles):
     # converts a SMILES string to canonical form
     mol = Chem.MolFromSmiles(smiles)
@@ -83,3 +82,16 @@ def canonicalize_smiles(smiles):
         return Chem.MolToSmiles(mol, isomericSmiles=True)
     else:
         return ''
+
+def process_smile(smile):
+    # Processes tokenized SMILES string into a form that RDKit accepts
+    if '> ' in smile:
+        # SMILES may have reaction token, this strips the reaction token
+        smile = smile.split('> ')[1]
+        
+    smile = ''.join(smile.split(' '))
+    return smile
+
+def smile_to_mol(smile):
+    # converts text SMILES into RDKit Mol object
+    return Chem.MolFromSmiles(smile)
