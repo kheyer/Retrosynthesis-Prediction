@@ -57,3 +57,8 @@ def create_reaction_variants(molecule):
     rxns = [i + ' ' + molecule for i in reactions]
     
     return rxns
+
+def molecules_to_file(molecules, filename):
+    with open(f'MCTS_data/{filename}.txt', 'w') as out:
+        for mol in molecules:
+            out.write(mol + '\n')
