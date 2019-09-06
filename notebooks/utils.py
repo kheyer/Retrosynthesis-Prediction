@@ -49,3 +49,11 @@ def translate_file(input_filename, output_filename):
             )
         
     return scores, predictions
+
+
+def create_reaction_variants(molecule):
+    reactions = ['<RX_1>', '<RX_2>', '<RX_3>', '<RX_4>', '<RX_5>', '<RX_6>',
+                 '<RX_7>', '<RX_8>', '<RX_9>', '<RX_10>']
+    rxns = [i + ' ' + molecule for i in reactions]
+    
+    return rxns
