@@ -206,3 +206,21 @@ def calc_ring_change(product, predicted_reactant):
     
     #ideally reactants are simpler and contain fewer rings
     return product_rings - reactant_rings
+
+
+def average_compound_size(smile):
+    # computes average token length of a molecule of string of molecules
+    if '.' in smile:
+        smile = smile.split('.')
+    else:
+        smile = [smile]
+        
+    lengths = []
+    for s in smile:
+        lengths.append(len(s.split(' ')))
+        
+    return sum(lengths) / len(lengths)
+
+def compound_size_change(product, predicted_reactant):
+    # ideally average reactant size is smaller than product size and this value is positive
+    return average_compound_size(product) - average_compound_size(predicted_reactant)
