@@ -145,6 +145,40 @@ def clean_predictions(df):
     
     return df
 
+def check_stoichiometry(reactants, product):
+    # Checks stoichiometry between product and predicted reactant
+    # All product molecules must be contained in the reactant prediction for the prediction to be valid
+    reactant_mol = smile_to_mol(process_smile(reactants))
+    product_mol = smile_to_mol(process_smile(product))
+    
+    reactant_dict = {}
+    product_dict = {}
+    
+    for i,atom in enumerate(reactant_mol.GetAtoms()):
+        atomic_num = atom.GetAtomicNum()
+
+        if atomic_num in reactant_dict.keys():
+            reactant_dict[atomic_num] += 1
+        else:
+            reactant_dict[atomic_num] = 1
+            
+    for i,atom in enumerate(product_mol.GetAtoms()):
+        atomic_num = atom.GetAtomicNum()
+
+        if atomic_num in product_dict.keys():
+            product_dict[atomic_num] += 1
+        else:
+            product_dict[atomic_num] = 1
+            
+    for key in product_dict.keys():
+        if not key in reactant_dict.keys():
+            return False
+
+        if product_dict[key] > reactant_dict[key]:
+            return False
+        
+    return True
+
 def process_predictions(df):
     # Clean and score prediction dataframe
     df = clean_predictions(df)
