@@ -262,3 +262,17 @@ def check_terminal(smile):
         return True
     else:
         return False
+
+# dictionary of reaction tokens to mechanisms
+rxn_dict = {
+    '<RX_1>' : 'Heteroatom Alkylation and Arylation',
+    '<RX_2>' : 'Acylation and Related Processes',
+    '<RX_3>' : 'C-C Bond Formation',
+    '<RX_4>' : 'Heterocycle Formation',
+    '<RX_5>' : 'Protection',
+    '<RX_6>' : 'Deprotection',
+    '<RX_7>' : 'Reduction',
+    '<RX_8>' : 'Oxidation',
+    '<RX_9>' : 'Functional Group Interconversion',
+    '<RX_10>' : 'Functional Group Addition'
+}
