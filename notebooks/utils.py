@@ -224,3 +224,24 @@ def average_compound_size(smile):
 def compound_size_change(product, predicted_reactant):
     # ideally average reactant size is smaller than product size and this value is positive
     return average_compound_size(product) - average_compound_size(predicted_reactant)
+
+def heuristic_scoring(product, predicted_reactant, model_score, a=100, b=6):
+    
+    # scoring function
+    # we want high confidence predictions that reduce complexity going from product to reactant
+    # complexity reduction is determined by the number of rings broken and change in average molecule side
+    # score terms are weighted by coefficients a and b
+
+    model_score_exp = np.exp(model_score)
+    ring_change = calc_ring_change(product, predicted_reactant)
+    size_change = compound_size_change(product, predicted_reactant)
+    
+    if model_score > -2:
+        # only compute full score for high confidence predictions
+        # occasionally low confience predictions of a sincle atom cause the ring and size change parameters
+        # to blow up and give an inflated score
+        score = a*model_score_exp + b*ring_change + size_change
+    else:
+        score = a*model_score_exp
+    
+    return score
