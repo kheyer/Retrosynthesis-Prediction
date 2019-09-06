@@ -52,6 +52,7 @@ def translate_file(input_filename, output_filename):
 
 
 def create_reaction_variants(molecule):
+    # creates a variant of the input for each reaction type token
     reactions = ['<RX_1>', '<RX_2>', '<RX_3>', '<RX_4>', '<RX_5>', '<RX_6>',
                  '<RX_7>', '<RX_8>', '<RX_9>', '<RX_10>']
     rxns = [i + ' ' + molecule for i in reactions]
@@ -59,6 +60,17 @@ def create_reaction_variants(molecule):
     return rxns
 
 def molecules_to_file(molecules, filename):
+    # writes molecules to text files
     with open(f'MCTS_data/{filename}.txt', 'w') as out:
         for mol in molecules:
             out.write(mol + '\n')
+
+def smile_valid(smile):
+    # determines of a predicted SMILES is valid
+    s = ''.join(smile.split(' '))
+    smile_check = AllChem.MolFromSmiles(s)
+    
+    if smile_check:
+        return True
+    else:
+        return False
