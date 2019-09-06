@@ -74,3 +74,12 @@ def smile_valid(smile):
         return True
     else:
         return False
+
+
+def canonicalize_smiles(smiles):
+    # converts a SMILES string to canonical form
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is not None:
+        return Chem.MolToSmiles(mol, isomericSmiles=True)
+    else:
+        return ''
