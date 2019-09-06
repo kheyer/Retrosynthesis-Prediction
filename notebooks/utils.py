@@ -194,3 +194,15 @@ def score_predictions(df):
                                                        row[f'Prediction'], 
                                                        row[f'Score']), axis=1)
     return df
+
+def calc_ring_change(product, predicted_reactant):
+    # returns a score based on the number of ring changes between product and predicted reactants
+    # we want to sepect reactant predictions that maximally break down the product
+    mol_product = smile_to_mol(process_smile(product))
+    mol_reactant = smile_to_mol(process_smile(predicted_reactant))
+    
+    product_rings = Chem.rdMolDescriptors.CalcNumRings(mol_product)
+    reactant_rings = Chem.rdMolDescriptors.CalcNumRings(mol_reactant)
+    
+    #ideally reactants are simpler and contain fewer rings
+    return product_rings - reactant_rings
