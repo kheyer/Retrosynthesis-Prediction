@@ -95,3 +95,12 @@ def process_smile(smile):
 def smile_to_mol(smile):
     # converts text SMILES into RDKit Mol object
     return Chem.MolFromSmiles(smile)
+
+def canonicalize_prediction(smiles):
+    # converts tokenized predicted SMILES into canonicalized form
+    smiles = canonicalize_smiles(process_smile(smiles))
+    
+    if smiles == '':
+        return smiles
+    else:
+        return ' '.join([i for i in smiles])
