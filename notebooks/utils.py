@@ -105,6 +105,27 @@ def canonicalize_prediction(smiles):
     else:
         return ' '.join([i for i in smiles])
 
+def create_prediction_df(molecule_variants, predictions, scores):
+    # Create dataframe of predictions
+    # molecule variants - variants of the source product with different reaction tokens
+    # predictions - list of lists of predicted SMILES for each molecule variant
+    # scores - list of lists for scores corresponding to predictions
+    dfs = []
+
+    # for ech variant, create dataframe of input, products, mechanisms and predictions
+    for i in range(len(molecule_variants)):
+        df_iter = pd.DataFrame({f'Prediction' : predictions[i], f'Score' : scores[i]})
+        df_iter[f'Score'] = df_iter[f'Score'].map(lambda x: x.item())
+        df_iter['Input'] = molecule_variants[i]
+        df_iter['Product_Molecule'] = df_iter.Input.map(lambda x: x.split('> ')[1])
+        df_iter['Mechanism'] = df_iter.Input.map(lambda x: x.split(' ')[0])
+        dfs.append(df_iter)
+
+    df = pd.concat(dfs, axis=0)
+    df = df.reset_index(drop=True)
+    
+    return df
+
 def clean_predictions(df):
     # cleans a dataframe of predictions
 
