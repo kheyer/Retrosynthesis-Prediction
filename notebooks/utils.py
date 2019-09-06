@@ -104,3 +104,22 @@ def canonicalize_prediction(smiles):
         return smiles
     else:
         return ' '.join([i for i in smiles])
+
+def clean_predictions(df):
+    # cleans a dataframe of predictions
+
+    # drops all invalid SMILES predictions
+    df = df[df[f'Prediction'].map(lambda x: smile_valid(x))]
+    df = df.reset_index(drop=True)
+
+    # canonicalizes predictions
+    df[f'Prediction'] = df[f'Prediction'].map(lambda x: canonicalize_prediction(x))
+
+    # applys stoichiometry check
+    df = df[df.apply(lambda row: check_stoichiometry(row['Prediction'], row['Product_Molecule']), axis=1)]
+    
+    # removes trivial predictions where product molecule is contained in predicted reactants
+    df = df[~df.apply(lambda row: row[f'Product_Molecule'] in row[f'Prediction'], axis=1)]
+    df = df.reset_index(drop=True)
+    
+    return df
