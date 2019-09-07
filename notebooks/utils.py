@@ -287,6 +287,12 @@ class Reaction():
     def __init__(self, product, score_threshold=50):
         
         self.product = product
+
+        # product_variants holds versions of the product molecule with different reaction mechanism tokens prepended
+        # These will be used for prediction
+        # There are 10 reaction mechanisms
+        # For each mechanism, 10 predictions are generated via beam search
+        # The top prediction (mechanism + predicted reactants) will be selected
         self.product_variants = create_reaction_variants(product)
         self.reactants = None
         
@@ -386,4 +392,120 @@ class Reaction():
             
         s += '\n'
             
+        return s
+
+class RetroSynthesis():
+    # Retrosynthesis class
+    # Manages multiple Reaction nodes
+    # Builds a retrosynthesis tree by recursively breaking down reaction nodes
+    def __init__(self, molecule, max_depth=15):
+        # Class is instantiated with a single target molecule
+        # max_depth controls the max number of iterations to avoid infinite loops
+        
+        self.molecule = molecule
+        self.smile = process_smile(molecule)
+        self.max_depth = max_depth
+        self.depth = 0
+        self.reactions = []
+        self.nodes = [Reaction(molecule)]
+                    
+    def batch_tree_prediction(self):
+        # Batch prediction over all active nodes
+        # Gathers all nodes, selecting nodes that are active
+        # An active node is a node that is not terminal and does not have predicted reactants
+        active_nodes = []
+        
+        for node in self.nodes:
+            if self.is_active(node):
+                active_nodes.append(node)
+                
+        if active_nodes and self.depth <= self.max_depth:
+            reactants = []
+            for node in active_nodes:
+                # For each active node, we gather the variants (different reaction tokens) of each product
+                reactants += node.product_variants
+                
+            # All product variants are written to a txt file for prediction
+            # Predicting all active products at once in the Retrosynthesis class, compared to running prediction
+            # one node at a time in the Reaction class, is much more efficient
+            molecules_to_file(reactants, 'source_products')
+
+            # Generate predictions
+            scores, predictions = translate_file('source_products', 'predicted_reactants')
+
+            # Predictions are stored in a dataframe
+            prediction_df = create_prediction_df(reactants, predictions, scores)
+
+            # Predictions are filtered for correct SMILES and scored
+            prediction_df = process_predictions(prediction_df)
+            
+            for node in active_nodes:
+                # For each node, the predictions specific to that product molecule are selected
+                # The selected dataframe is passed to the add_prediction function
+                node_df = prediction_df[prediction_df.Product_Molecule == node.product]
+                node_df = node_df.reset_index(drop=True)
+                node.add_prediction(node_df)
+
+                # New child nodes are created based on the prediction results
+                self.create_children(node)
+                
+            self.depth += 1
+            
+            # Batch prediction function is called recursively until either max_depth is reached or there are no active nodes
+            self.batch_tree_prediction()
+                
+    def create_children(self, node):
+        # Creates new child nodes based on prediction results
+        # New nodes are only created if a node has predicted reactants and is not terminal
+        if node.reactants and not node.terminal:
+            for reactant in node.individual_reactants:
+                # For each individual reactant, a new node is created
+                child_node = Reaction(reactant)
+
+                # For each new node, we set the parent attribute in the new node and add the new node to the children of the parent
+                child_node.parent = node
+                node.children.append(child_node)
+                
+                # new nodes are added to the list of nodes in the Retrosynthesis class
+                self.nodes.append(child_node)
+                    
+    def is_active(self, node):
+        # A node is active if there are no predicted reactants and the node is not terminal
+        if node.reactants or node.terminal:
+            return False
+        else:
+            return True
+        
+    def extract_reaction(self, node):
+        # For a given node, this function recursively extracts all predicted reactions that are children to the node
+        if node.reactants:
+            self.reactions.append([node.product, node.reaction_mechanism, 
+                                   node.reactants, node.top_prediction.Prediction_Score.values[0]])
+            
+        if node.children:
+            for child_node in node.children:
+                self.extract_reaction(child_node)
+                
+    def display_synthesis(self, img_size=(400,400)):
+        # Runs through the predicted reactions in reverse (ie forward synthesis) and displays all predicted steps
+        reaction_mols = []
+        legend = []
+
+        for reaction in reversed(self.reactions):
+            product_mol = smile_to_mol(process_smile(reaction[0]))
+            reactant_mol = smile_to_mol(process_smile(reaction[2]))
+            legend_iter = [f'Reactant ({rxn_dict[reaction[1]]})', f'Product ({reaction[3]:.4})']
+            reaction_mols += [reactant_mol, product_mol]
+            legend += legend_iter
+            
+        return Draw.MolsToGridImage(reaction_mols, legends=legend, molsPerRow=2, subImgSize=img_size)
+    
+    def run_retrosynthesis(self):
+        # Runs recursive batch prediction, then extracts reactions from the intial parent node
+        self.batch_tree_prediction()
+        self.extract_reaction(self.nodes[0])
+        
+    def __repr__(self):
+        s = f'Retrosynthesis for {self.smile}'
+        
         return s
