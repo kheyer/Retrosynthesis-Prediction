@@ -276,3 +276,114 @@ rxn_dict = {
     '<RX_9>' : 'Functional Group Interconversion',
     '<RX_10>' : 'Functional Group Addition'
 }
+
+class Reaction():
+    # Class for managing a single reaction for retrosynthesis prediction
+    # A reaction is instantiated with the tokenized SMILES of the product molecule
+    # A score threshold is passed to filter predictions
+    # The reaction class receives a set of reactant predictions, filters them, and selects the best prediction of reactants
+    # Predicted reactants are checked to see if they are terminal
+    # Reaction objects are made to connect in a tree-like structure, and have attributes for parent and child nodes
+    def __init__(self, product, score_threshold=50):
+        
+        self.product = product
+        self.product_variants = create_reaction_variants(product)
+        self.reactants = None
+        
+        self.children = []
+        self.parent = None
+        self.terminal = False
+        self.process_product(self.product)
+        
+        self.score_threshold = score_threshold
+
+    def add_prediction(self, df):
+        # df is a dataframe of predictions from the product molecule
+        # The actual prediction process is run by the Retrosynthesis class to allow for batched prediction
+        self.prediction_df = df
+        
+        if self.parent:
+            # If there is a parent node, predictions containing the parent molecule are discarded
+            # This prevents recursive loops where the same two molecules are predicted from one another infinitely
+            self.prediction_df = self.prediction_df[~self.prediction_df.apply(lambda row: 
+                                            self.parent.product in row['Prediction'], axis=1)]
+            self.prediction_df = self.prediction_df.reset_index(drop=True)
+            
+        if self.prediction_df.shape[0] == 0:
+            # If the dataframe is empty, indicating no predictions produced valid SMILES or unique molecules, the node is designated terminal
+            self.terminal = True
+            
+        else:
+            # Otherwise, select best prediction
+            self.top_prediction = self.prediction_df.nlargest(1, 'Prediction_Score')
+
+            if self.top_prediction.Prediction_Score.values[0] < self.score_threshold:
+                # If no predictions pass the threshold, the node is terminal
+                self.terminal = True
+
+            else:
+                # If a prediction is valid, the reactants are added
+                self.add_reactants(self.top_prediction.Prediction.values[0], 
+                                   self.top_prediction.Mechanism.values[0])
+        
+    def process_product(self, product):
+        # Checks the product molecule upon instantiation to see if it is terminal
+        if check_terminal(product):
+            self.terminal = True
+        
+    def add_reactants(self, reactant, mechanism):
+        # Adds reactant molecules under the reactant and individual_reactant attributes
+        # reactants contain the exact predicted string, which may contain multiple molecules
+        # individual_reactants accounts for this
+        # the reaction mechanism is also recorded
+        self.reactants = reactant
+        
+        if '.' in reactant:
+            self.individual_reactants = reactant.split(' . ')
+        else:
+            self.individual_reactants = [reactant]
+            
+        self.reaction_mechanism = mechanism
+        
+    def display_reaction(self, img_size=(400,400)):
+        # Displays product molecule and reactants if they exist
+        product_mol = smile_to_mol(process_smile(self.product))
+        legend = ['Product']
+        mols = [product_mol]
+        
+        if self.reactants:
+            reactant_mol = smile_to_mol(process_smile(self.reactants))
+            legend += [f'Reactants ({rxn_dict[self.reaction_mechanism]})']
+            mols += [reactant_mol]
+            
+        return Draw.MolsToGridImage(mols, subImgSize=img_size, legends=legend)
+    
+    def display_prediction(self, idx, img_size=(400,400)):
+        # Displays any prediction in prediction_df by index
+        # Useful for examining predictions that didn't get selected
+        prod = smile_to_mol(process_smile(self.prediction_df.iloc[idx].Product_Molecule))
+        pred = smile_to_mol(process_smile(self.prediction_df.iloc[idx].Prediction))
+
+        legend = [f'Reactants ({rxn_dict[self.prediction_df.iloc[idx].Mechanism]})',
+                  'Product']
+
+        return Draw.MolsToGridImage([pred, prod], legends=legend, subImgSize=img_size)
+
+        
+    def __repr__(self):
+        # Repr - prints product SMILES, reactants if they exist, and if the node is terminal
+        s = 'Product: ' + process_smile(self.product) + '\n'
+        
+        if self.reactants:
+            s += 'Reactants: ' + process_smile(self.reactants) + '\n'
+            s += 'Reaction Mechanism: ' + rxn_dict[self.reaction_mechanism]
+            
+        elif self.terminal:
+            s += 'Terminal Reactant'
+            
+        else:
+            s += 'Reactants not yet identified'
+            
+        s += '\n'
+            
+        return s
