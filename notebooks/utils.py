@@ -208,7 +208,7 @@ def calc_ring_change(product, predicted_reactant):
     return product_rings - reactant_rings
 
 
-def average_compound_size(smile):
+def average_compound_size(smile, ret_max=False):
     # computes average token length of a molecule of string of molecules
     if '.' in smile:
         smile = smile.split('.')
@@ -218,14 +218,17 @@ def average_compound_size(smile):
     lengths = []
     for s in smile:
         lengths.append(len(s.split(' ')))
-        
-    return sum(lengths) / len(lengths)
+
+    if ret_max:
+        return max(lengths)
+    else:
+        return sum(lengths) / len(lengths)
 
 def compound_size_change(product, predicted_reactant):
     # ideally average reactant size is smaller than product size and this value is positive
-    return average_compound_size(product) - average_compound_size(predicted_reactant)
+    return average_compound_size(product) - average_compound_size(predicted_reactant, ret_max=True)
 
-def heuristic_scoring(product, predicted_reactant, model_score, a=100, b=6):
+def heuristic_scoring(product, predicted_reactant, model_score, a=100, b=10, c=3):
     
     # scoring function
     # we want high confidence predictions that reduce complexity going from product to reactant
@@ -240,7 +243,7 @@ def heuristic_scoring(product, predicted_reactant, model_score, a=100, b=6):
         # only compute full score for high confidence predictions
         # occasionally low confience predictions of a sincle atom cause the ring and size change parameters
         # to blow up and give an inflated score
-        score = a*model_score_exp + b*ring_change + size_change
+        score = a*model_score_exp + b*ring_change + c*size_change
     else:
         score = a*model_score_exp
     
@@ -254,8 +257,8 @@ def check_terminal(smile):
         # Grignards are considered terminal
         # Grignard forming reactions are not present in the training data and therefore cannot be predicted
         return True
-    if smile_to_mol(smile).GetNumAtoms() < 13:
-        # Small molecules with less than 13 atoms are considered terminal
+    if smile_to_mol(smile).GetNumAtoms() < 11:
+        # Small molecules with less than 11 atoms are considered terminal
         return True
     if len(smile) <= 10:
         # SMILES character length of less than 10 is considered terminal
@@ -284,7 +287,7 @@ class Reaction():
     # The reaction class receives a set of reactant predictions, filters them, and selects the best prediction of reactants
     # Predicted reactants are checked to see if they are terminal
     # Reaction objects are made to connect in a tree-like structure, and have attributes for parent and child nodes
-    def __init__(self, product, score_threshold=50):
+    def __init__(self, product, score_threshold=36):
         
         self.product = product
 
