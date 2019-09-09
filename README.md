@@ -27,8 +27,11 @@ We trained a transformer sequence to sequence model for retrosynthesis reactant 
     └───notebooks
             Data Generation.ipynb
             Prediction Evaluation.ipynb
+            Retrosynthesis Reaction Planning.ipynb
         
-The `notebooks` directory contains notebooks showing how to generate the SMILES augmented datasets (`Data Generation`) and how to evaluate model predictions (`Prediction Evaluation`). The `model_details` directory contains additional details on implementing the sequence to sequence transformer model using OpenNMT. `model_convig.yml` is a basic configuration file to recreate the training process. The `README` file in the `model_details` directory contains instructions on preprocessing data, training the model using the config file and generating predictions. The `predictions.zip` file contains predictions used to generate the results above.
+The `notebooks` directory contains notebooks showing how to generate the SMILES augmented datasets (`Data Generation`), how to evaluate model predictions (`Prediction Evaluation`), and how to use the model for iterative retrosynthesis reaction planning (`Retrosynthesis Reaction Planning`).
+
+The `model_details` directory contains additional details on implementing the sequence to sequence transformer model using OpenNMT. `model_convig.yml` is a basic configuration file to recreate the training process. The `README` file in the `model_details` directory contains instructions on preprocessing data, training the model using the config file and generating predictions. The `predictions.zip` file contains predictions used to generate the results above.
 
 ## What is Retrosynthesis?
 
